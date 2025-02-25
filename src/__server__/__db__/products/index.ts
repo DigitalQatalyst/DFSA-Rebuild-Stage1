@@ -53,3 +53,159 @@ export const productApiEndpoints = (Mock: MockAdapter) => {
     }
   });
 };
+
+import { GraphQLClient, gql } from "graphql-request";
+import Product from "@models/product.model";
+ 
+// Initialize the Vendure GraphQL client
+const client = new GraphQLClient("http://localhost:3009/shop-api", {
+  headers: {
+     "Content-Type" : "application/json"
+  },
+});
+ 
+// Define the structure of the query response
+interface ProductVariant {
+  id: string;
+  priceWithTax: number;
+}
+ 
+// interface Product {
+//   id: string;
+//   name: string;
+//   slug: string;
+//   description: string;
+//   variants: ProductVariant[];
+// }
+ 
+interface ProductListData {
+  products: {
+    items: Product[];
+    totalItems: number;
+  };
+}
+ 
+// For the "GetProductBySlug" query response
+interface ProductVariant {
+  id: string;
+  priceWithTax: number;
+}
+ 
+interface GetProductBySlugResponse {
+  product: Product;
+}
+ 
+// For the "GetProductSlugs" query response
+interface ProductSlug {
+  slug: string;
+}
+ 
+interface Products {
+  items: ProductSlug[];
+}
+ 
+interface GetProductSlugsResponse {
+  products: Products;
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+// Define the GraphQL queries
+const GET_PRODUCTS = gql`
+  query GetProducts($options: ProductListOptions) {
+    products(options: $options) {
+      items {
+        id
+        name
+        slug
+        description
+        variants {
+          id
+          priceWithTax
+        }
+      }
+      totalItems
+    }
+  }
+`;
+ 
+const GET_PRODUCT_BY_SLUG = gql`
+  query GetProductBySlug($slug: String!) {
+    product(slug: $slug) {
+      id
+      name
+      description
+      variants {
+        id
+        priceWithTax
+      }
+    }
+  }
+`;
+ 
+const GET_PRODUCT_SLUGS = gql`
+  query GetProductSlugs {
+    products {
+      items {
+        slug
+      }
+    }
+  }
+`;
+ 
+// Replace your mocked endpoints
+export const productApiEndpointsGQL = () => {
+  const slug = 'football';
+  return {
+    getProducts: async (page: number = 1, pageSize: number = 28) => {
+      try {
+        const options = { take: pageSize, skip: (page - 1) * pageSize };
+        // const response = await client.request(GET_PRODUCTS, { options });
+        // Use this type when making the GraphQL request
+      const response = await client.request<ProductListData>(GET_PRODUCTS, { options });
+      console.log(response.products.items);
+        return {
+          meta: {
+            page,
+            pageSize,
+            total: response.products.totalItems,
+            totalPage: Math.ceil(response.products.totalItems / pageSize),
+          },
+          result: response.products.items,
+        };
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        throw new Error("Internal server error");
+      }
+    },
+ 
+    getProductBySlug: async (slug: string) => {
+      try {
+        const response: GetProductBySlugResponse = await client.request(
+          GET_PRODUCT_BY_SLUG,
+          { slug }
+        );
+        return response.product;
+      } catch (error) {
+        console.error("Error fetching product by slug:", error);
+        throw new Error("Internal server error");
+      }
+    },
+ 
+    getProductSlugs: async () => {
+      try {
+        const response: GetProductSlugsResponse = await client.request(
+          GET_PRODUCT_SLUGS
+        );
+        return response.products.items.map((item) => ({ params: { slug: item.slug } }));
+      } catch (error) {
+        console.error("Error fetching product slugs:", error);
+        throw new Error("Internal server error");
+      }
+    },
+  };
+};
