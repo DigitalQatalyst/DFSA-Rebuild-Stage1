@@ -127,7 +127,7 @@ export default function ProductCard19(props: ProductCard19Props) {
           </FlexBox>
 
           <Button fullwidth color="dark" variant="outlined" onClick={handleAddToCart}>
-            Add To Cart
+            Read More
           </Button>
         </Box>
       </CardBox>

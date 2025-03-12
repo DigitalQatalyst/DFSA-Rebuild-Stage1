@@ -36,25 +36,25 @@ export default async function FashionOne() {
         </Box>
 
         {/* FLASH DEAL PRODUCTS AREA */}
-        <Section3 />
+        {/* <Section3 /> */}
 
         {/* NEW ARRIVAL PRODUCTS AREA */}
-        <Section4 />
+        {/* <Section4 /> */}
 
         {/* DEALS OF WEEK PRODUCTS AREA */}
-        <Section5 list={dealOfTheWeek} />
+        {/* <Section5 list={dealOfTheWeek} /> */}
 
         {/* DEAL OF THE DAY CAROUSEL AREA */}
-        <Section6 list={hotDealList} />
+        {/* <Section6 list={hotDealList} /> */}
 
         {/* TRENDING PRODUCTS AREA */}
-        <Section7 products={trendingItems} />
+        {/* <Section7 products={trendingItems} /> */}
 
         {/* SERVICES AREA */}
-        <Section8 />
+        {/* <Section8 /> */}
 
         {/* NEWSLETTER AREA */}
-        <Section9 />
+        {/* <Section9 /> */}
       </Container>
     </Fragment>
   );
